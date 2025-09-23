@@ -1,73 +1,81 @@
-
 package formulario;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import logica.Persona;
 
-
 public class Form extends javax.swing.JFrame {
-    
+
     private Persona[] registro;
     DefaultTableModel modelo = new DefaultTableModel();
-    
+
     public Form() {
         initComponents();
         this.setLocationRelativeTo(this);
-        inicio();
         registro = new Persona[0];
-        String[] encabezados = {"Documento", "Nombre", "Edad", "Celular", "Email"}; 
+        inicio();
+        String[] encabezados = {"Documento", "Nombre", "Edad", "Celular", "Email"};
         modelo.setColumnIdentifiers(encabezados);
         tblDatos.setModel(modelo);
     }
-    
-    public void insertar(String documento, String nombre, int edad, String email, int celular){
+
+    public void insertar(String documento, String nombre, int edad, String email, int celular) {
         registro = redimensionar();
-        registro[registro.length-1] = new Persona(documento, nombre, email, celular, edad);
-        JOptionPane.showMessageDialog(this, "Registro exitoso", "Confirmación de registro", JOptionPane.INFORMATION_MESSAGE);       
-        lblContador.setText(registro.length+"");
+        registro[registro.length - 1] = new Persona(documento, nombre, email, celular, edad);
+        JOptionPane.showMessageDialog(this, "Registro exitoso", "Confirmación de registro", JOptionPane.INFORMATION_MESSAGE);
         inicio();
     }
-    
-    public void inicio(){
+
+    public void actualizar(String nombre, String email, int celular, int edad) {
+        registro[tblDatos.getSelectedRow()].setNombre(nombre);
+        registro[tblDatos.getSelectedRow()].setEmail(email);
+        registro[tblDatos.getSelectedRow()].setCelular(celular);
+        registro[tblDatos.getSelectedRow()].setEdad(edad);
+        JOptionPane.showMessageDialog(this, "Se actualizó el registro exitosamente");
+        inicio();
+    }
+
+    public void inicio() {
         txtDocumento.setEnabled(true);
         btnRegistrar.setEnabled(true);
         btnBuscar.setEnabled(true);
         btnEditar.setEnabled(true);
         btnActualizar.setEnabled(false);
         btnEliminar.setEnabled(true);
+        lblContador.setText(registro.length + "");
         limpiar();
         mostrar();
     }
-    
-    public void editar(int indice){
+
+    public void editar(int indice) {
         txtDocumento.setText(registro[indice].getDocumento());
         txtNombre.setText(registro[indice].getNombre());
         txtEmail.setText(registro[indice].getEmail());
-        txtCelular.setText(registro[indice].getCelular()+"");
-        txtEdad.setText(registro[indice].getEdad()+"");
+        txtCelular.setText(registro[indice].getCelular() + "");
+        txtEdad.setText(registro[indice].getEdad() + "");
         txtDocumento.setEnabled(false);
+        txtNombre.requestFocus();
         btnActualizar.setEnabled(true);
         btnRegistrar.setEnabled(false);
         btnBuscar.setEnabled(false);
         btnEditar.setEnabled(false);
         btnEliminar.setEnabled(false);
     }
-    
-    public void mostrar(){
-        if(registro != null){
+
+    public void mostrar() {
+        if (registro != null) {
             modelo.setRowCount(0);
-            for(int i = 0; i < registro.length; i++) {
+            for (int i = 0; i < registro.length; i++) {
                 modelo.addRow(new Object[]{registro[i].getDocumento(),
-                                           registro[i].getNombre(),
-                                           registro[i].getEdad(),
-                                           registro[i].getCelular(),
-                                           registro[i].getEmail()});
+                    registro[i].getNombre(),
+                    registro[i].getEdad(),
+                    registro[i].getCelular(),
+                    registro[i].getEmail()});
             }
         }
     }
-    
-    public void limpiar(){
+
+    public void limpiar() {
         txtDocumento.setText("");
         txtNombre.setText("");
         txtEmail.setText("");
@@ -75,27 +83,43 @@ public class Form extends javax.swing.JFrame {
         txtCelular.setText("");
         txtDocumento.requestFocus();
     }
-    
-    public Persona[] redimensionar(){
-        Persona[] aux = new Persona[registro.length+1];
-        
+
+    public Persona[] redimensionar() {
+        Persona[] aux = new Persona[registro.length + 1];
+
         for (int i = 0; i < registro.length; i++) {
             aux[i] = registro[i];
         }
-        
-        return aux;        
-        
+
+        return aux;
+
     }
-    
-    public int buscar(String documento){
+
+    public int buscar(String documento) {
         for (int i = 0; i < registro.length; i++) {
-            if(documento.equals(registro[i].getDocumento())) {
+            if (documento.equals(registro[i].getDocumento())) {
                 return i;
             }
         }
         return -1;
     }
-    
+
+    public void eliminar(int indice) {
+        Persona[] aux = new Persona[registro.length - 1];
+
+        for (int i = 0; i < registro.length; i++) {
+            if (i < indice) {
+                aux[i] = registro[i];
+            } else if (i > indice) {
+                aux[i - 1] = registro[i];
+            }
+        }
+
+        registro = aux;
+
+        JOptionPane.showMessageDialog(this, "Registro eliminado");
+        inicio();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -139,6 +163,12 @@ public class Form extends javax.swing.JFrame {
 
         jLabel2.setText("Documento:");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 130, -1, -1));
+
+        txtDocumento.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtDocumentoFocusLost(evt);
+            }
+        });
         jPanel1.add(txtDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 122, 230, 30));
 
         jLabel3.setText("Nombre:");
@@ -253,41 +283,66 @@ public class Form extends javax.swing.JFrame {
         String email = txtEmail.getText();
         int edad = Integer.parseInt(txtEdad.getText());
         int celular = Integer.parseInt(txtCelular.getText());
-        
+
         insertar(documento, nombre, edad, email, celular);
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         String documento = JOptionPane.showInputDialog(this, "Ingrese el documento a buscar");
-        
+
         int pos = buscar(documento);
-        if(pos != -1){
-           modelo.setRowCount(0);
-           modelo.addRow(new Object[]{registro[pos].getDocumento(),
-                                       registro[pos].getNombre(),
-                                       registro[pos].getEdad(),
-                                       registro[pos].getCelular(),
-                                       registro[pos].getEmail()});
-        }else{
+        if (pos != -1) {
+            modelo.setRowCount(0);
+            modelo.addRow(new Object[]{registro[pos].getDocumento(),
+                registro[pos].getNombre(),
+                registro[pos].getEdad(),
+                registro[pos].getCelular(),
+                registro[pos].getEmail()});
+        } else {
             JOptionPane.showMessageDialog(this, "No se encotraron resultados para la busqueda");
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        if (tblDatos.getSelectedRow() != -1) {
+            int op = JOptionPane.showConfirmDialog(this, "¿Esta seguro que desea eliminar el registro?", "Eliminar registro", JOptionPane.WARNING_MESSAGE);
+
+            if (op == JOptionPane.YES_OPTION) {
+                eliminar(tblDatos.getSelectedRow());
+            } else {
+                JOptionPane.showMessageDialog(this, "No se ha realizado ningún cambio");
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Debes seleccionar un registro");
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        if(tblDatos.getSelectedRow() != -1) {
+        if (tblDatos.getSelectedRow() != -1) {
             editar(tblDatos.getSelectedRow());
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "Debes seleccionar un registro");
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        // TODO add your handling code here:
+        String nombre = txtNombre.getText();
+        String email = txtEmail.getText();
+        int edad = Integer.parseInt(txtEdad.getText());
+        int celular = Integer.parseInt(txtCelular.getText());
+
+        actualizar(nombre, email, celular, edad);
+
     }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void txtDocumentoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDocumentoFocusLost
+        if (txtDocumento.getText().isBlank()) {
+            btnRegistrar.setEnabled(false);
+        } else {
+            btnRegistrar.setEnabled(true);
+        }
+    }//GEN-LAST:event_txtDocumentoFocusLost
 
     /**
      * @param args the command line arguments
