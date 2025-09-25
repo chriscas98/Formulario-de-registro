@@ -95,6 +95,15 @@ public class Form extends javax.swing.JFrame {
 
     }
 
+    public boolean validar(String nombre, String documento, String email, String edad, String celular) {
+
+        if (nombre.trim().isEmpty() || documento.trim().isEmpty() || email.trim().isEmpty() || edad.trim().isEmpty() || celular.trim().isEmpty()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public int buscar(String documento) {
         for (int i = 0; i < registro.length; i++) {
             if (documento.equals(registro[i].getDocumento())) {
@@ -130,6 +139,7 @@ public class Form extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        grpSexo = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -151,6 +161,11 @@ public class Form extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        rdbMasculino = new javax.swing.JRadioButton();
+        rdbFemenino = new javax.swing.JRadioButton();
+        jLabel9 = new javax.swing.JLabel();
+        cbxPrograma = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -193,10 +208,10 @@ public class Form extends javax.swing.JFrame {
                 btnRegistrarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 230, 40));
+        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 420, 230, 40));
 
-        jLabel6.setText("Edad:");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 300, -1, -1));
+        jLabel6.setText("Programa:");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, -1));
         jPanel1.add(txtEdad, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 290, 230, 30));
 
         lblContador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -221,7 +236,7 @@ public class Form extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblDatos);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 610, 80));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, 610, 80));
 
         btnBuscar.setBackground(new java.awt.Color(242, 242, 242));
         btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/icons8-búsqueda-16.png"))); // NOI18N
@@ -263,15 +278,32 @@ public class Form extends javax.swing.JFrame {
         });
         jPanel1.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 220, 140, 40));
 
+        jLabel7.setText("Edad:");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 300, -1, -1));
+
+        grpSexo.add(rdbMasculino);
+        rdbMasculino.setText("Masculino");
+        jPanel1.add(rdbMasculino, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 340, -1, -1));
+
+        grpSexo.add(rdbFemenino);
+        rdbFemenino.setText("Femenino");
+        jPanel1.add(rdbFemenino, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 340, -1, -1));
+
+        jLabel9.setText("Sexo:");
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, -1, -1));
+
+        cbxPrograma.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ingenieria de Sistemas", "Psicologia", "Administracion" }));
+        jPanel1.add(cbxPrograma, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 380, 230, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 646, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
         );
 
         pack();
@@ -281,10 +313,29 @@ public class Form extends javax.swing.JFrame {
         String nombre = txtNombre.getText();
         String documento = txtDocumento.getText();
         String email = txtEmail.getText();
-        int edad = Integer.parseInt(txtEdad.getText());
-        int celular = Integer.parseInt(txtCelular.getText());
+        String edadString = txtEdad.getText();
+        String celularString = txtCelular.getText();
+        String programa;
+        char sexo = ' ';
+        
+        if(rdbMasculino.isSelected()) {
+            sexo = 'm';
+        }else if (rdbFemenino.isSelected()){
+            sexo = 'f';
+        }
+        
+        programa = (String)cbxPrograma.getSelectedItem();
+        
+        JOptionPane.showMessageDialog(this, programa);
 
-        insertar(documento, nombre, edad, email, celular);
+        if (validar(nombre, documento, email, edadString, celularString)) {
+            JOptionPane.showMessageDialog(this, "Debes completar todos los campos");
+        } else {
+            int edad = Integer.parseInt(edadString);
+            int celular = Integer.parseInt(celularString);
+            insertar(documento, nombre, edad, email, celular);
+        }
+        
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
@@ -327,21 +378,24 @@ public class Form extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        String documento = txtDocumento.getText();
         String nombre = txtNombre.getText();
         String email = txtEmail.getText();
-        int edad = Integer.parseInt(txtEdad.getText());
-        int celular = Integer.parseInt(txtCelular.getText());
+        String edadString = txtEdad.getText();
+        String celularString = txtCelular.getText();
 
-        actualizar(nombre, email, celular, edad);
+        if (validar(nombre, documento, email, edadString, celularString)) {
+            JOptionPane.showMessageDialog(this, "Debes completar todos los campos");
+        } else {
 
+            int edad = Integer.parseInt(edadString);
+            int celular = Integer.parseInt(celularString);
+            actualizar(nombre, email, celular, edad);
+        }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void txtDocumentoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDocumentoFocusLost
-        if (txtDocumento.getText().isBlank()) {
-            btnRegistrar.setEnabled(false);
-        } else {
-            btnRegistrar.setEnabled(true);
-        }
+
     }//GEN-LAST:event_txtDocumentoFocusLost
 
     /**
@@ -385,16 +439,22 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnRegistrar;
+    private javax.swing.JComboBox<String> cbxPrograma;
+    private javax.swing.ButtonGroup grpSexo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblContador;
+    private javax.swing.JRadioButton rdbFemenino;
+    private javax.swing.JRadioButton rdbMasculino;
     private javax.swing.JTable tblDatos;
     private javax.swing.JTextField txtCelular;
     private javax.swing.JTextField txtDocumento;
